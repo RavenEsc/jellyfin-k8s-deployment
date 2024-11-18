@@ -13,10 +13,15 @@ spec:
   template:
     metadata:
       labels:
-        app: jf
+        {{- include "jellyfin-charts.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       nodeSelector:
-        app: jellyfin
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }} 
       volumes:
         - name: media-pv-storage
           persistentVolumeClaim:
