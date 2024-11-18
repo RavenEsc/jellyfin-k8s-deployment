@@ -112,7 +112,7 @@ volumes: []
 
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts: []
-# - name: foo
+# - name: foojellyfin-charts/template/values.yaml
 #   mountPath: "/etc/foo"
 #   readOnly: true
 
