@@ -1,7 +1,6 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: manual
+  name: {{ .Values.storageClass.name }}
 provisioner: kubernetes.io/no-provisioner # indicates that this StorageClass does not support automatic provisioning
-volumeBindingMode: WaitForFirstConsumer
-
+volumeBindingMode: {{ .Values.storageClass.volumeBindingMode }}

@@ -3,10 +3,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: media-pv-claim
 spec:
-  storageClassName: manual
+  storageClassName: {{ .Values.storageClass.name }}
   accessModes:
-    - ReadWriteMany
+    {{- include .Values.mediaVolumeConfig.hostPath . | nindent 4}}
   resources:
     requests:
-      storage: 800Gi
-
+      storage: {{ .Values.mediaVolumeConfig.storage }}

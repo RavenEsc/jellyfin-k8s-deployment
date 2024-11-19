@@ -3,7 +3,7 @@ kind: PersistentVolume
 metadata:
   name: media-pv-volume
 spec:
-  storageClassName: manual
+  storageClassName: {{ .Values.storageClass.name }}
   capacity:
     storage: 50Gi
   accessModes:

@@ -1,15 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jellyfin-deployment
+  name: {{ include "jellyfin-charts.fullname" . }}
   labels:
-    app: jf
+    {{- include "jellyfin-charts.labels" . | nindent 4 }}
     namespace: jellyfin1
 spec:
-  replicas: 1
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
-      app: jf
+      {{- include "jellyfin-charts.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
@@ -18,40 +20,33 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          {{- with .Values.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- with .Values.env }}
+          volumeMounts:
+            - mountPath: {{ .Values.mediaVolumeConfig.mountPath }}
+              name: {{ .Values.mediaVolumeConfig.name }}
+            - mountPath: {{ .Values.dataVolumeConfig.mountPath }}
+              name: {{ .Values.dataVolumeConfig.name }}
+            - mountPath: {{ .Values.webVolumeConfig.mountPath }}
+              name: {{ .Values.webVolumeConfig.name }}
+      volumes:
+        - name: {{ .Values.mediaVolumeConfig.name }}
+          persistentVolumeClaim:
+            claimName: {{}}
+        - name: {{ .Values.dataVolumeConfig.name }}
+          persistentVolumeClaim:
+            claimName: data-pv-claim
+        - name: {{ .Values.webVolumeConfig.name }}
+          persistentVolumeClaim:
+            claimName: web-pv-claim
+      {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }} 
-      volumes:
-        - name: media-pv-storage
-          persistentVolumeClaim:
-            claimName: media-pv-claim
-        - name: data-pv-storage
-          persistentVolumeClaim:
-            claimName: data-pv-claim
-        - name: web-pv-storage
-          persistentVolumeClaim:
-            claimName: web-pv-claim
-      containers:
-        - name: linuxjellyfin-container
-          image: lscr.io/linuxserver/jellyfin:latest
-          ports:
-            - containerPort: 8096
-#          env:
-#            - name: JELLYFIN_DATA_DIR
-#              value: "/var/lib/jellyfin/data"
-#            - name: JELLYFIN_CONFIG_DIR
-#              value: "/media/jellyfin/config"
-#            - name: JELLYFIN_CACHE_DIR
-#              value: "/media/jellyfin/cache"
-#            - name: JELLYFIN_WEB_DIR
-#              value: "/media/jellyfin/web"
-#            - name: JELLYFIN_LOG_DIR
-#              value: "/media/jellyfin/logs"
-          volumeMounts:
-            - mountPath: "/media/jellyfin"
-              name: media-pv-storage
-            - mountPath: "/config"
-              name: data-pv-storage
-            - mountPath: "/usr/share/jellyfin/web"
-              name: web-pv-storage

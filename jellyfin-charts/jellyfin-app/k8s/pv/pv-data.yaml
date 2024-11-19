@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: data-pv-volume
+  name: {{ include "jellyfin-charts.fullname" . }}-data-pv
 spec:
-  storageClassName: manual
+  storageClassName: {{ .Values.storageClass.name }}
   capacity:
-    storage: 100Gi
+    storage: {{ .Values.dataVolumeConfig.storage }}
   accessModes:
-    - ReadWriteMany
+    {{- include .Values.dataVolumeConfig.hostPath . | nindent 4}}
   hostPath:
-    path: "/mnt/MediaStorage/jellyfin-data"
+    path: {{ .Values.dataVolumeConfig.hostPath }}

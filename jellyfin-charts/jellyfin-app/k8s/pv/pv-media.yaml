@@ -3,7 +3,7 @@ kind: PersistentVolume
 metadata:
   name: web-pv-volume
 spec:
-  storageClassName: manual
+  storageClassName: {{ .Values.storageClass.name }}
   capacity:
     storage: 800Gi
   accessModes:

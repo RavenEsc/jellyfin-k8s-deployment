@@ -1,14 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: jf-service
+  name: {{ include "jellyfin-charts.fullname" . }}
+  labels:
+    {{- include "jellyfin-charts.labels" . | nindent 4 }}
 spec:
-  type: NodePort
+  type: {{ .Values.service.type }}
   selector:
-    app: jf
+    {{- include "jellyfin-charts.selectorLabels" . | nindent 4 }}
   ports:
-  - name: jf
-    protocol: TCP
-    port: 8096
-    targetPort: 8096
-    nodePort: 30096
+  - protocol: {{ .Values.service.protocol }}
+    port: {{ .Values.service.port }}
+    targetPort: {{ .Values.service.port }}
+    nodePort: {{ .Values.service.nodePort }}

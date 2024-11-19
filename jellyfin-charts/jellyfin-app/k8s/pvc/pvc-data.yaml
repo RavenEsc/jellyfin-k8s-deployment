@@ -3,9 +3,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: data-pv-claim
 spec:
-  storageClassName: manual
+  storageClassName: {{ .Values.storageClass.name }}
   accessModes:
-    - ReadWriteMany
+    {{- include .Values.dataVolumeConfig.hostPath . | nindent 4}}
   resources:
     requests:
-      storage: 100Gi
+      storage: {{ .Values.dataVolumeConfig.storage }}
