@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.mediaVolumeConfig.name }}-pv
+spec:
+  storageClassName: {{ .Values.storageClass.name }}
+  capacity:
+    storage: {{ .Values.mediaVolumeConfig.storage }}
+  {{- with .Values.mediaVolumeConfig.accessModes }}
+  accessModes:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  hostPath:
+    path: {{ .Values.mediaVolumeConfig.hostPath }}

@@ -4,11 +4,9 @@ metadata:
   name: {{ include "jellyfin-charts.fullname" . }}
   labels:
     {{- include "jellyfin-charts.labels" . | nindent 4 }}
-    namespace: jellyfin1
+    namespace: {{ .Values.namespace | default "jellyfin" }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "jellyfin-charts.selectorLabels" . | nindent 6 }}
@@ -28,7 +26,7 @@ spec:
           {{- with .Values.env }}
           env:
             {{- toYaml . | nindent 12 }}
-          {{- with .Values.env }}
+          {{- end }}
           volumeMounts:
             - mountPath: {{ .Values.mediaVolumeConfig.mountPath }}
               name: {{ .Values.mediaVolumeConfig.name }}
@@ -39,13 +37,13 @@ spec:
       volumes:
         - name: {{ .Values.mediaVolumeConfig.name }}
           persistentVolumeClaim:
-            claimName: {{}}
+            claimName: {{ .Values.mediaVolumeConfig.claimName }}
         - name: {{ .Values.dataVolumeConfig.name }}
           persistentVolumeClaim:
-            claimName: data-pv-claim
+            claimName: {{ .Values.dataVolumeConfig.claimName }}
         - name: {{ .Values.webVolumeConfig.name }}
           persistentVolumeClaim:
-            claimName: web-pv-claim
+            claimName: {{ .Values.webVolumeConfig.claimName }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

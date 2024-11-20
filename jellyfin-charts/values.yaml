@@ -1,0 +1,61 @@
+namespace: ""
+replicaCount: 1
+
+image:
+  repository: lscr.io/linuxserver/jellyfin
+  tag: latest
+
+nameOverride: linuxjellyfin-container
+fullnameOverride: jellyfin-app
+
+podLabels:
+  app: jf
+
+env:
+  - name: JELLYFIN_DATA_DIR
+    value: "/var/lib/jellyfin/data"
+  - name: JELLYFIN_CONFIG_DIR
+    value: "/media/jellyfin/config"
+  - name: JELLYFIN_CACHE_DIR
+    value: "/media/jellyfin/cache"
+  - name: JELLYFIN_WEB_DIR
+    value: "/media/jellyfin/web"
+  - name: JELLYFIN_LOG_DIR
+    value: "/media/jellyfin/logs"
+
+service:
+  type: NodePort
+  protocol: TCP
+  port: 8096
+  nodePort: 30096
+
+nodeSelector:
+  app: jellyfin
+
+storageClass:
+  name: manual
+  volumeBindingMode: WaitForFirstConsumer
+
+dataVolumeConfig:
+  name: data
+  storage: 100Gi
+  accessModes: ReadWriteMany
+  hostPath: "/mnt/MediaStorage/jellyfin-data"
+  mountPath: "/config"
+  claimName: data-pv-claim
+
+mediaVolumeConfig:
+  name:  media
+  storage: 800Gi
+  accessModes: ReadWriteMany
+  hostPath: "/mnt/MediaStorage/jellyfin-media"
+  mountPath: "/media/jellyfin"
+  claimName: media-pv-claim
+
+webVolumeConfig:
+  name:  web
+  storage: 50Gi
+  accessModes: ReadWriteMany
+  hostPath: /mnt/MediaStorage/jellyfin-web
+  mountPath: "/usr/share/jellyfin/web"
+  claimName: web-pv-claim
