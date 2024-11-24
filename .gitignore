@@ -2,3 +2,4 @@
 .vscode
 # Add more files to leave out of a git commit below
 template-backup
+.devcontainer

@@ -23,17 +23,20 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           ports:
             - containerPort: {{ .Values.service.port }}
-          {{- with .Values.env }}
-          env:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+          ### This is for the option to change the available jellyfin directories
+          ### in the container as given by https://docs.linuxserver.io/images/docker-jellyfin/#usage
+          # {{- with .Values.env }}
+          # env:
+          #   {{- toYaml . | nindent 12 }}
+          # {{- end }}
           volumeMounts:
             - mountPath: {{ .Values.mediaVolumeConfig.mountPath }}
               name: {{ .Values.mediaVolumeConfig.name }}
             - mountPath: {{ .Values.dataVolumeConfig.mountPath }}
               name: {{ .Values.dataVolumeConfig.name }}
-            - mountPath: {{ .Values.webVolumeConfig.mountPath }}
-              name: {{ .Values.webVolumeConfig.name }}
+            ### Currently breaks the web application, testing fixes.
+            # - mountPath: {{ .Values.webVolumeConfig.mountPath }}
+            #   name: {{ .Values.webVolumeConfig.name }}
       volumes:
         - name: {{ .Values.mediaVolumeConfig.name }}
           persistentVolumeClaim:
@@ -41,9 +44,11 @@ spec:
         - name: {{ .Values.dataVolumeConfig.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.dataVolumeConfig.claimName }}
-        - name: {{ .Values.webVolumeConfig.name }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.webVolumeConfig.claimName }}
+        ### Intended to get session tokens and web personalization persistent
+        ### across pods, currently breaks the application.
+        # - name: {{ .Values.webVolumeConfig.name }}
+        #   persistentVolumeClaim:
+        #     claimName: {{ .Values.webVolumeConfig.claimName }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

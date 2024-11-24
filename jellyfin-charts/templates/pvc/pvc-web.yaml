@@ -1,13 +1,15 @@
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Values.webVolumeConfig.claimName }}
-spec:
-  storageClassName: {{ .Values.storageClass.name }}
-  {{- with .Values.webVolumeConfig.accessModes }}
-  accessModes:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-  resources:
-    requests:
-      storage: {{ .Values.webVolumeConfig.storage }}
+### The pv this claims currently does not run properly, check other files for 
+### details.
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: {{ .Values.webVolumeConfig.claimName }}
+# spec:
+#   storageClassName: {{ .Values.storageClass.name }}
+#   {{- with .Values.webVolumeConfig.accessModes }}
+#   accessModes:
+#     {{- toYaml . | nindent 4 }}
+#   {{- end }}
+#   resources:
+#     requests:
+#       storage: {{ .Values.webVolumeConfig.storage }}
