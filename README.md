@@ -9,8 +9,8 @@
   - The ykvar.sh file is for mass configuring the variables in the base k8s directory
   For more information, see the dev article: link-here
 ## Version History
-    ### [Unreleased] - 2024-11-24
-      The base configuration, has the YAML files, Helm Charts, Mass Editing Script, and the .gitignore file
+  ### [Unreleased] - 2024-11-24
+  The base configuration, has the YAML files, Helm Charts, Mass Editing Script, and the .gitignore file
 
 ## Acknowledgements
   - https://docs.linuxserver.io/images/docker-jellyfin/
@@ -21,5 +21,6 @@
   - https://www.proxmox.com/en/downloads/proxmox-virtual-environment
   - https://sourceforge.net/projects/ventoy/
   - https://forum.proxmox.com/threads/shared-disk-on-all-vm.109851/
+
   Thank you to these writers and all of the developers on sites like StackOverflow, Reddit, and other unmentioned docs and blogs!
 
