@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin-deployment
+  labels:
+    app: jf
+    namespace: jellyfin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jf
+  template:
+    metadata:
+      labels:
+        app: jf
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: 'worker-node01'
+      volumes:
+        - name: media-pv-storage
+          persistentVolumeClaim:
+            claimName: media-pv-claim
+        - name: data-pv-storage
+          persistentVolumeClaim:
+            claimName: data-pv-claim
+      containers:
+        - name: linuxjellyfin-container
+          image: lscr.io/linuxserver/jellyfin:latest
+          ports:
+            - containerPort: 8096
+          volumeMounts:
+            - mountPath: "/media/jellyfin"
+              name: media-pv-storage
+            - mountPath: "/config"
+              name: data-pv-storage

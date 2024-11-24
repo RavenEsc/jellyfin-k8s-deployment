@@ -1,61 +1,70 @@
-namespace: ""
-replicaCount: 1
+namespace: "jellyfin"
+replicaCount: 1 # currently session tokens are not persistent, breaks if more are made, in testing (same as: "web-pv" issue)
 
+### This is the container image made for jellyfin
 image:
-  repository: lscr.io/linuxserver/jellyfin
+  repository: lscr.io/linuxserver/jellyfin 
   tag: latest
 
-nameOverride: linuxjellyfin-container
-fullnameOverride: jellyfin-app
+### Option to name your resources
+nameOverride: linuxjellyfin-app
+fullnameOverride: jellyfin-k3shelm-deployment
 
 podLabels:
   app: jf
 
-env:
-  - name: JELLYFIN_DATA_DIR
-    value: "/var/lib/jellyfin/data"
-  - name: JELLYFIN_CONFIG_DIR
-    value: "/media/jellyfin/config"
-  - name: JELLYFIN_CACHE_DIR
-    value: "/media/jellyfin/cache"
-  - name: JELLYFIN_WEB_DIR
-    value: "/media/jellyfin/web"
-  - name: JELLYFIN_LOG_DIR
-    value: "/media/jellyfin/logs"
+### This is for the option of setting your environmental variables
+# env:
+#   - name: JELLYFIN_DATA_DIR
+#     value: "/var/lib/jellyfin/data"
+#   - name: JELLYFIN_CONFIG_DIR
+#     value: "/media/jellyfin/config"
+#   - name: JELLYFIN_CACHE_DIR
+#     value: "/media/jellyfin/cache"
+#   - name: JELLYFIN_WEB_DIR
+#     value: "/media/jellyfin/web"
+#   - name: JELLYFIN_LOG_DIR
+#     value: "/media/jellyfin/logs"
 
+### For the option to change, and to make consistent across files
 service:
   type: NodePort
   protocol: TCP
   port: 8096
   nodePort: 30096
 
+###
 nodeSelector:
-  app: jellyfin
+  kubernetes.io/hostname: worker-node01 # !! Change this to your worker name
 
+### For the option to change, and to make consistent across files
 storageClass:
   name: manual
   volumeBindingMode: WaitForFirstConsumer
 
 dataVolumeConfig:
   name: data
-  storage: 100Gi
-  accessModes: ReadWriteMany
-  hostPath: "/mnt/MediaStorage/jellyfin-data"
+  storage: 100Gi # !! this sets how much space you give to the data files
+  accessModes: 
+    - ReadWriteMany # this gives jellyfin the permissions to access the volumes
+  hostPath: "/mnt/MediaStorage/jellyfin-data" # !! change to where you plan to send your data files
   mountPath: "/config"
   claimName: data-pv-claim
 
 mediaVolumeConfig:
   name:  media
-  storage: 800Gi
-  accessModes: ReadWriteMany
-  hostPath: "/mnt/MediaStorage/jellyfin-media"
-  mountPath: "/media/jellyfin"
-  claimName: media-pv-claim
+  storage: 800Gi # this sets how much space you give to the media libraries
+  accessModes: 
+    - ReadWriteMany
+  hostPath: "/mnt/MediaStorage/jellyfin-media" # !! change to where you plan to send your media files
+  mountPath: "/media/jellyfin" # this is where you will tell jellyfin where the media libraries are
+  claimName: media-pv-claim 
 
-webVolumeConfig:
-  name:  web
-  storage: 50Gi
-  accessModes: ReadWriteMany
-  hostPath: /mnt/MediaStorage/jellyfin-web
-  mountPath: "/usr/share/jellyfin/web"
-  claimName: web-pv-claim
+# webVolumeConfig:
+#   name:  web
+#   storage: 50Gi
+#   accessModes: 
+#     - ReadWriteMany
+#   hostPath: /mnt/MediaStorage/jellyfin-web
+#   mountPath: "/usr/share/jellyfin/web"
+#   claimName: web-pv-claim
